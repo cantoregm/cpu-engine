@@ -45,6 +45,12 @@ public:
 	bool IsDown();
 	bool IsDownPressed();
 	bool IsDownReleased();
+	bool IsLookingUp();
+	bool IsLookingUpPressed();
+	bool IsLookingUpReleased();
+	bool IsLookingDown();
+	bool IsLookingDownPressed();
+	bool IsLookingDownReleased();
 
 	void Update();
 };

@@ -443,7 +443,7 @@ void cpu_mesh::CreateSphere(float radius, int stacks, int slices, XMFLOAT3 color
 			if ( topBand )
 			{
 				// Au pôle nord, p00 et p01 sont quasiment identiques (theta0=0).
-				// Triangle orienté vers l'extérieur (CCW vu de l'extérieur).
+				// Triangle orient?vers l'extérieur (CCW vu de l'extérieur).
 				// On utilise: p00 (sommet), p10 (bas gauche), p11 (bas droite)
 				AddTriangle(p00, p10, p11, uv00, uv10, uv11, color);
 			}
@@ -470,19 +470,74 @@ void cpu_mesh::CreateSphere(float radius, int stacks, int slices, XMFLOAT3 color
 
 void cpu_mesh::CreateSpaceship()
 {
+	//Clear();
+	//const float width = 2.0f;
+	//XMFLOAT3 nose = { 0.0f, 0.0f, 1.5f };
+	//XMFLOAT3 rTop = { 0.0f, 0.5f, -1.0f };
+	//XMFLOAT3 rBot = { 0.0f, -0.3f, -1.0f };
+	//XMFLOAT3 wLeft = { -width*0.5f, 0.0f, -1.0f };
+	//XMFLOAT3 wRight = { width*0.5f, 0.0f, -1.0f };
+
+	//XMFLOAT2 noseUV		= { 0.5f, 0.0f };
+	//XMFLOAT2 rTopUV		= { 0.5f, 0.4f };
+	//XMFLOAT2 rBotUV		= { 0.5f, 0.8f };
+	//XMFLOAT2 wLeftUV	= { 0.0f, 0.6f };
+	//XMFLOAT2 wRightUV	= { 1.0f, 0.6f };
+
+	//XMFLOAT3 c1 = cpu::ToColor(208, 208, 208);
+	//XMFLOAT3 c2 = cpu::ToColor(192, 192, 192);
+	//XMFLOAT3 c3 = cpu::ToColor(112, 112, 112);
+	//XMFLOAT3 c4 = cpu::ToColor(96, 96, 96);
+	//XMFLOAT3 c5 = cpu::ToColor(255, 255, 255);
+	//XMFLOAT3 c6 = cpu::ToColor(255, 255, 255);
+
+	//vertices.reserve(vertices.size()+18);
+	//AddTriangle(nose, wLeft, rTop, noseUV, wLeftUV, rTopUV, c1);		// Avant gauche haut
+	//AddTriangle(nose, rTop, wRight, noseUV, rTopUV, wRightUV, c2);		// Avant droit haut
+	//AddTriangle(nose, rBot, wLeft, noseUV, rBotUV, wLeftUV, c3);		// Avant gauche bas
+	//AddTriangle(nose, wRight, rBot, noseUV, wRightUV, rBotUV, c4);		// Avant droit bas
+	//AddTriangle(wLeft, rBot, rTop, wLeftUV, rBotUV, rTopUV, c5);		// Moteur gauche
+	//AddTriangle(wRight, rTop, rBot, wRightUV, rTopUV, rBotUV, c6);		// Moteur droit
+	//Optimize();
+
 	Clear();
 	const float width = 2.0f;
-	XMFLOAT3 nose = { 0.0f, 0.0f, 1.5f };
-	XMFLOAT3 rTop = { 0.0f, 0.5f, -1.0f };
-	XMFLOAT3 rBot = { 0.0f, -0.3f, -1.0f };
-	XMFLOAT3 wLeft = { -width*0.5f, 0.0f, -1.0f };
-	XMFLOAT3 wRight = { width*0.5f, 0.0f, -1.0f };
+	XMFLOAT3 CGFrontTopLeft = { -1.1f, 1.f , 1.f };
+	XMFLOAT3 CGFrontTopRight = { -0.1f, 1.f , 1.f };
+	XMFLOAT3 CGBackTopLeft = { -1.1f, 1.f , 0.f };
+	XMFLOAT3 CGBackTopRight = { -0.1f, 1.f , 0.f };
+	XMFLOAT3 CGFrontBotLeft = { -1.1f, 0.f , 1.f };
+	XMFLOAT3 CGFrontBotRight = { -0.1f, 0.f , 1.f };
+	XMFLOAT3 CGBackBotLeft = { -1.1f, 0.f , 0.f };
+	XMFLOAT3 CGBackBotRight = { -0.1f, 0.f , 0.f };
 
-	XMFLOAT2 noseUV		= { 0.5f, 0.0f };
-	XMFLOAT2 rTopUV		= { 0.5f, 0.4f };
-	XMFLOAT2 rBotUV		= { 0.5f, 0.8f };
-	XMFLOAT2 wLeftUV	= { 0.0f, 0.6f };
-	XMFLOAT2 wRightUV	= { 1.0f, 0.6f };
+	XMFLOAT3 CDFrontTopLeft = { 0.1f, 1.f , 1.f };
+	XMFLOAT3 CDFrontTopRight = { 1.1f, 1.f , 1.f };
+	XMFLOAT3 CDBackTopLeft = { 0.1f, 1.f , 0.f };
+	XMFLOAT3 CDBackTopRight = { 1.1f, 1.f , 0.f };
+	XMFLOAT3 CDFrontBotLeft = { 0.1f, 0.f , 1.f };
+	XMFLOAT3 CDFrontBotRight = { 1.1f, 0.f , 1.f };
+	XMFLOAT3 CDBackBotLeft = { 0.1f, 0.f , 0.f };
+	XMFLOAT3 CDBackBotRight = { 1.1f, 0.f , 0.f };
+
+	XMFLOAT3 FFrontTopLeft = { -0.5f, 1.f , 3.f };
+	XMFLOAT3 FFrontTopRight = { 0.5f, 1.f , 3.f };
+	XMFLOAT3 FBackTopLeft = { -0.5f, 1.f , 1.f };
+	XMFLOAT3 FBackTopRight = { 0.5f, 1.f , 1.f };
+	XMFLOAT3 FFrontBotLeft = { -0.5f, 0.f , 3.f };
+	XMFLOAT3 FFrontBotRight = { 0.5f, 0.f , 3.f };
+	XMFLOAT3 FBackBotLeft = { -0.5f, 0.f , 1.f };
+	XMFLOAT3 FBackBotRight = { 0.5f, 0.f , 1.f };
+
+
+	XMFLOAT2 FrontTopLeftUV = {1.f, 0.f };
+	XMFLOAT2 FrontTopRightUV = { 1.f, 0.f };
+	XMFLOAT2 BackTopLeftUV = { 1.f, 0.f };
+	XMFLOAT2 BackTopRightUV = { 1.f, 0.f };
+	XMFLOAT2 FrontBotLeftUV = { 1.f, 0.f };
+	XMFLOAT2 FrontBotRightUV = { 1.f, 0.f };
+	XMFLOAT2 BackBotLeftUV = { 1.f, 0.f };
+	XMFLOAT2 BackBotRightUV = { 1.f, 0.f };
 
 	XMFLOAT3 c1 = cpu::ToColor(208, 208, 208);
 	XMFLOAT3 c2 = cpu::ToColor(192, 192, 192);
@@ -490,13 +545,72 @@ void cpu_mesh::CreateSpaceship()
 	XMFLOAT3 c4 = cpu::ToColor(96, 96, 96);
 	XMFLOAT3 c5 = cpu::ToColor(255, 255, 255);
 	XMFLOAT3 c6 = cpu::ToColor(255, 255, 255);
+	XMFLOAT3 c7 = cpu::ToColor(255, 255, 255);
+	XMFLOAT3 c8 = cpu::ToColor(255, 255, 255);
+	XMFLOAT3 c9 = cpu::ToColor(255, 255, 255);
+	XMFLOAT3 c10 = cpu::ToColor(255, 255, 255);
+	XMFLOAT3 c11 = cpu::ToColor(255, 255, 255);
+	XMFLOAT3 c12 = cpu::ToColor(255, 255, 255);
 
-	vertices.reserve(vertices.size()+18);
-	AddTriangle(nose, wLeft, rTop, noseUV, wLeftUV, rTopUV, c1);		// Avant gauche haut
-	AddTriangle(nose, rTop, wRight, noseUV, rTopUV, wRightUV, c2);		// Avant droit haut
-	AddTriangle(nose, rBot, wLeft, noseUV, rBotUV, wLeftUV, c3);		// Avant gauche bas
-	AddTriangle(nose, wRight, rBot, noseUV, wRightUV, rBotUV, c4);		// Avant droit bas
-	AddTriangle(wLeft, rBot, rTop, wLeftUV, rBotUV, rTopUV, c5);		// Moteur gauche
-	AddTriangle(wRight, rTop, rBot, wRightUV, rTopUV, rBotUV, c6);		// Moteur droit
+	vertices.reserve(vertices.size() + 108);
+
+	//couille gauche
+	AddTriangle(CGFrontTopLeft, CGBackTopLeft, CGBackTopRight, FrontTopLeftUV, BackTopLeftUV, BackTopRightUV, c1);
+	AddTriangle(CGFrontTopLeft, CGBackTopRight, CGFrontTopRight, FrontTopLeftUV, BackTopRightUV, FrontTopRightUV, c2); //haut
+
+	AddTriangle(CGBackBotLeft, CGFrontBotLeft, CGFrontBotRight, BackBotLeftUV, BackBotRightUV, FrontBotLeftUV, c3);
+	AddTriangle(CGBackBotLeft, CGFrontBotRight, CGBackBotRight, FrontBotRightUV, FrontBotLeftUV, BackBotRightUV, c4);	//bas
+
+	AddTriangle(CGFrontBotLeft, CGFrontTopLeft, CGFrontTopRight, FrontTopLeftUV, FrontBotLeftUV, FrontBotRightUV, c5);
+	AddTriangle(CGFrontBotLeft, CGFrontTopRight, CGFrontBotRight, FrontTopRightUV, FrontBotLeftUV, FrontBotRightUV, c6); //avant
+
+	AddTriangle(CGBackTopLeft, CGBackBotLeft, CGBackBotRight, BackTopLeftUV, BackTopRightUV, BackBotRightUV, c7);
+	AddTriangle(CGBackTopLeft, CGBackBotRight, CGBackTopRight, BackTopLeftUV, BackBotRightUV, BackBotLeftUV, c8);	//arri¨¨re
+
+	AddTriangle(CGFrontTopLeft, CGFrontBotLeft, CGBackBotLeft, BackTopLeftUV, BackBotLeftUV, FrontBotLeftUV, c9);
+	AddTriangle(CGFrontTopLeft, CGBackBotLeft, CGBackTopLeft, FrontTopLeftUV, BackBotLeftUV, FrontBotLeftUV, c10); //gauche
+
+	AddTriangle(CGBackTopRight, CGBackBotRight, CGFrontBotRight, BackTopRightUV, BackBotRightUV, FrontBotRightUV, c11);
+	AddTriangle(CGBackTopRight, CGFrontBotRight, CGFrontTopRight, FrontTopRightUV, BackBotRightUV, FrontBotRightUV, c12); //droite	
+
+	//couille droite
+	AddTriangle(CDFrontTopLeft, CDBackTopLeft, CDBackTopRight, FrontTopLeftUV, BackTopLeftUV, BackTopRightUV, c1);
+	AddTriangle(CDFrontTopLeft, CDBackTopRight, CDFrontTopRight, FrontTopLeftUV, BackTopRightUV, FrontTopRightUV, c2); //haut
+
+	AddTriangle(CDBackBotLeft, CDFrontBotLeft, CDFrontBotRight, BackBotLeftUV, BackBotRightUV, FrontBotLeftUV, c3);
+	AddTriangle(CDBackBotLeft, CDFrontBotRight, CDBackBotRight, FrontBotRightUV, FrontBotLeftUV, BackBotRightUV, c4);	//bas
+
+	AddTriangle(CDFrontBotLeft, CDFrontTopLeft, CDFrontTopRight, FrontTopLeftUV, FrontBotLeftUV, FrontBotRightUV, c5);
+	AddTriangle(CDFrontBotLeft, CDFrontTopRight, CDFrontBotRight, FrontTopRightUV, FrontBotLeftUV, FrontBotRightUV, c6); //avant
+
+	AddTriangle(CDBackTopLeft, CDBackBotLeft, CDBackBotRight, BackTopLeftUV, BackTopRightUV, BackBotRightUV, c7);
+	AddTriangle(CDBackTopLeft, CDBackBotRight, CDBackTopRight, BackTopLeftUV, BackBotRightUV, BackBotLeftUV, c8);	//arri¨¨re
+
+	AddTriangle(CDFrontTopLeft, CDFrontBotLeft, CDBackBotLeft, BackTopLeftUV, BackBotLeftUV, FrontBotLeftUV, c9);
+	AddTriangle(CDFrontTopLeft, CDBackBotLeft, CDBackTopLeft, FrontTopLeftUV, BackBotLeftUV, FrontBotLeftUV, c10); //gauche
+
+	AddTriangle(CDBackTopRight, CDBackBotRight, CDFrontBotRight, BackTopRightUV, BackBotRightUV, FrontBotRightUV, c11);
+	AddTriangle(CDBackTopRight, CDFrontBotRight, CDFrontTopRight, FrontTopRightUV, BackBotRightUV, FrontBotRightUV, c12); //droite	
+
+	//fallus
+
+	AddTriangle(FFrontTopLeft, FBackTopLeft, FBackTopRight, FrontTopLeftUV, BackTopLeftUV, BackTopRightUV, c1);
+	AddTriangle(FFrontTopLeft, FBackTopRight, FFrontTopRight, FrontTopLeftUV, BackTopRightUV, FrontTopRightUV, c2); //haut
+
+	AddTriangle(FBackBotLeft, FFrontBotLeft, FFrontBotRight, BackBotLeftUV, BackBotRightUV, FrontBotLeftUV, c3);
+	AddTriangle(FBackBotLeft, FFrontBotRight, FBackBotRight, FrontBotRightUV, FrontBotLeftUV, BackBotRightUV, c4); //bas
+
+	AddTriangle(FFrontBotLeft, FFrontTopLeft, FFrontTopRight, FrontTopLeftUV, FrontBotLeftUV, FrontBotRightUV, c5);
+	AddTriangle(FFrontBotLeft, FFrontTopRight, FFrontBotRight, FrontTopRightUV, FrontBotLeftUV, FrontBotRightUV, c6); //avant
+
+	AddTriangle(FBackTopLeft, FBackBotLeft, FBackBotRight, BackTopLeftUV, BackTopRightUV, BackBotRightUV, c7);
+	AddTriangle(FBackTopLeft, FBackBotRight, FBackTopRight, BackTopLeftUV, BackBotRightUV, BackBotLeftUV, c8); //arri¨¨re
+
+	AddTriangle(FFrontTopLeft, FFrontBotLeft, FBackBotLeft, BackTopLeftUV, BackBotLeftUV, FrontBotLeftUV, c9);
+	AddTriangle(FFrontTopLeft, FBackBotLeft, FBackTopLeft, FrontTopLeftUV, BackBotLeftUV, FrontBotLeftUV, c10); //gauche
+
+	AddTriangle(FBackTopRight, FBackBotRight, FFrontBotRight, BackTopRightUV, BackBotRightUV, FrontBotRightUV, c11);
+	AddTriangle(FBackTopRight, FFrontBotRight, FFrontTopRight, FrontTopRightUV, BackBotRightUV, FrontBotRightUV, c12); //droite
+
 	Optimize();
 }

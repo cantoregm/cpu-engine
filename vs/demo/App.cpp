@@ -152,18 +152,18 @@ void App::OnUpdate()
 	m_pEmitter->dir.y = -m_pEmitter->dir.y; 
 	m_pEmitter->dir.z = -m_pEmitter->dir.z; 
 
-	// Turn camera
-	cpuEngine.GetCamera()->transform.AddYPR(0.0f, 0.0f, dt*0.1f);
+	//// Turn camera
+	//cpuEngine.GetCamera()->transform.AddYPR(0.0f, 0.0f, dt*0.1f);
 
-	// Move ship
-	if ( cpuInput.IsUp() )
-		cpuEngine.GetCamera()->transform.Move(dt*1.0f);
-	if ( cpuInput.IsDown() )
-		cpuEngine.GetCamera()->transform.Move(-dt*1.0f);
-	if ( cpuInput.IsLeft() )
-		cpuEngine.GetCamera()->transform.AddYPR(-dt*XM_PI);
-	if ( cpuInput.IsRight() )
-		cpuEngine.GetCamera()->transform.AddYPR(dt*XM_PI);
+	//// Move ship
+	//if ( cpuInput.IsUp() )
+	//	cpuEngine.GetCamera()->transform.Move(dt*1.0f);
+	//if ( cpuInput.IsDown() )
+	//	cpuEngine.GetCamera()->transform.Move(-dt*1.0f);
+	//if ( cpuInput.IsLeft() )
+	//	cpuEngine.GetCamera()->transform.AddYPR(-dt*XM_PI);
+	//if ( cpuInput.IsRight() )
+	//	cpuEngine.GetCamera()->transform.AddYPR(dt*XM_PI);
 
 	// Move missiles
 	for ( auto it=m_missiles.begin() ; it!=m_missiles.end() ; ++it )
@@ -255,7 +255,7 @@ void App::OnRender(int pass)
 
 void App::MissileShader(cpu_ps_io& io)
 {
-	// garder seulement le rouge du pixel éclairé
+	// garder seulement le rouge du pixel éclair?
 	io.color.x = io.p.color.x;
 }
 
@@ -306,11 +306,24 @@ void Ship::Update()
 {
 	float dt = cpuTime.delta;
 
-	// Turn ship
-	m_pEntity->transform.AddYPR(dt, dt, dt);
+	//// Turn ship
+	//m_pEntity->transform.AddYPR(dt, dt, dt);
 
-	// Move ship
-	m_pEntity->transform.pos.z += dt * 1.0f;
+	//// Move ship
+	//m_pEntity->transform.pos.z += dt * 1.0f;
+
+	if (cpuInput.IsUp())
+		m_pEntity->transform.Move(dt * 10.0f);
+	if (cpuInput.IsDown())
+		m_pEntity->transform.Move(-dt * 10.0f);
+	if (cpuInput.IsLeft())
+		m_pEntity->transform.AddYPR(-dt * XM_PI);
+	if (cpuInput.IsRight())
+		m_pEntity->transform.AddYPR(dt * XM_PI);
+	if (cpuInput.IsLookingUp())
+		m_pEntity->transform.AddYPR(0, -dt * XM_PI);
+	if (cpuInput.IsLookingDown())
+		m_pEntity->transform.AddYPR(0, dt * XM_PI);
 
 	// Fire
 	if ( cpuInput.vi.IsKey(VK_SPACE) )
