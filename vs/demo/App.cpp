@@ -8,7 +8,7 @@ App::App()
 	CPU_CALLBACK_EXIT(OnExit);
 	CPU_CALLBACK_RENDER(OnRender);
 
-	m_pShip = nullptr;
+	m_pPlayer = nullptr;
 }
 
 App::~App()
@@ -24,8 +24,8 @@ void App::SpawnMissile()
 	cpu_entity* pMissile = cpuEngine.CreateEntity();
 	pMissile->pMesh = &m_meshMissile;
 	pMissile->transform.SetScaling(0.2f);
-	pMissile->transform.pos = m_pShip->GetEntity()->transform.pos;
-	pMissile->transform.SetRotation(m_pShip->GetEntity()->transform);
+	pMissile->transform.pos = m_pPlayer->GetEntity()->transform.pos;
+	pMissile->transform.SetRotation(m_pPlayer->GetEntity()->transform);
 	pMissile->transform.Move(1.5f);
 	m_missiles.push_back(pMissile);
 }
@@ -59,7 +59,7 @@ void App::OnStart()
 	m_font.Create(cpuDevice.GetHeight()<=512 ? 14 : 28);
 	m_textureBird.Load("bird_amiga.png");
 	m_textureEarth.Load("earth.png");
-	m_meshShip.CreateSpaceship();
+	m_meshPlayer.CreateSpaceship();
 	m_meshMissile.CreateSphere(0.5f);
 	m_meshSphere.CreateSphere(2.0f, 12, 12);
 	m_rts[0] = cpuEngine.CreateRT();
@@ -91,9 +91,9 @@ void App::OnStart()
 	m_pMoon->transform.SetScaling(0.1f);
 
 	// Ship
-	m_pShip = new Ship;
-	m_pShip->Create(&m_meshShip, &m_materialShip);
-	m_pShip->GetFSM()->ToState(CPU_ID(StateShipIdle));
+	m_pPlayer = new Ship;
+	m_pPlayer->Create(&m_meshPlayer, &m_materialShip);
+	m_pPlayer->GetFSM()->ToState(CPU_ID(StateShipIdle));
 
 	// Particle
 	cpuEngine.GetParticleData()->Create(2000000);
@@ -196,9 +196,9 @@ void App::OnExit()
 {
 	// YOUR CODE HERE
 
-	if ( m_pShip )
-		m_pShip->Destroy();
-	CPU_DELPTR(m_pShip);
+	if ( m_pPlayer )
+		m_pPlayer->Destroy();
+	CPU_DELPTR(m_pPlayer);
 	m_missiles.clear();
 }
 

@@ -24,7 +24,7 @@ private:
 
 	// Resources
 	cpu_font m_font;
-	cpu_mesh m_meshShip;
+	cpu_mesh m_meshPlayer;
 	cpu_mesh m_meshMissile;
 	cpu_mesh m_meshSphere;
 	cpu_texture m_textureBird;
@@ -41,7 +41,7 @@ private:
 	cpu_material m_materialEarth;
 
 	// 3D
-	Ship* m_pShip;
+	Ship* m_pPlayer;
 	std::list<cpu_entity*> m_missiles;
 	float m_missileSpeed;
 	cpu_entity* m_pEarth;
