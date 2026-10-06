@@ -388,7 +388,7 @@ cpu_entity* cpu_engine::HitEntity(cpu_hit& hit, cpu_ray& ray)
 		if ( cpu::RayAabb(ray, pEntity->aabb, enter, exit)==false )
 			continue;
 
-		// Si même l'entrée dans l'AABB est déjà plus loin que le meilleur hit, skip
+		// Si même l'entrée dans l'AABB est déj?plus loin que le meilleur hit, skip
 		if ( enter>distResult )
 			continue;
 

@@ -231,7 +231,7 @@ bool RayAabb(cpu_ray& ray, cpu_aabb& box, XMFLOAT3* pOutHit, float* pOutT)
 
 	auto slab = [&](float ro, float rd, float bmin, float bmax) -> bool
 	{
-		// Rayon parallèle à l’axe -> doit être dans le slab pour intersecter
+		// Rayon parallèle ?l’axe -> doit être dans le slab pour intersecter
 		const float eps = 1e-12f;
 		if ( fabsf(rd)<eps )
 			return ro>=bmin && ro<=bmax;
@@ -260,7 +260,7 @@ bool RayAabb(cpu_ray& ray, cpu_aabb& box, XMFLOAT3* pOutHit, float* pOutT)
 
 	// On veut le premier point avec t >= 0
 	// Si tmin < 0, ça veut dire "entrée derrière", mais comme on a exclu le cas inside,
-	// c'est rare; on clamp à 0 pour "premier contact forward".
+	// c'est rare; on clamp ?0 pour "premier contact forward".
 	float t = tmin>=0.0f ? tmin : 0.0f;
 
 	if ( pOutHit )
@@ -288,7 +288,7 @@ bool RayAabb(cpu_ray& ray, cpu_aabb& box, float& outTEnter, float& outTExit)
 		const float eps = 1e-12f;
 		if ( fabsf(rd)<eps )
 		{
-			// Parallèle à cet axe : il faut être dans le slab
+			// Parallèle ?cet axe : il faut être dans le slab
 			return ro>=bmin && ro<=bmax;
 		}
 
@@ -391,7 +391,7 @@ bool RaySphere(cpu_ray& ray, XMFLOAT3& center, float radius, XMFLOAT3& outHit, f
 	// On résout ||(ro + t rd) - C||^2 = r^2
 	// a t^2 + 2b t + c = 0, avec:
 	// a = dot(rd, rd)
-	// b = dot(oc, rd) où oc = ro - C
+	// b = dot(oc, rd) o?oc = ro - C
 	// c = dot(oc, oc) - r^2
 	const XMFLOAT3 oc = Sub3(ray.pos, center);
 
@@ -411,7 +411,7 @@ bool RaySphere(cpu_ray& ray, XMFLOAT3& center, float radius, XMFLOAT3& outHit, f
 
 	const float sqrtDisc = sqrtf(disc);
 
-	// Racines: t = (-b ± sqrtDisc) / a
+	// Racines: t = (-b ?sqrtDisc) / a
 	// On veut le plus petit t >= 0
 	float t0 = (-b - sqrtDisc) / a;
 	float t1 = (-b + sqrtDisc) / a;
@@ -447,7 +447,7 @@ bool RaySphere(cpu_ray& ray, XMFLOAT3& center, float radius, XMFLOAT3& outHit, f
 }
 
 // Retourne true si intersection.
-// outHit = point d’intersection (premier point rencontré pour t >= 0).
+// outHit = point d’intersection (premier point rencontr?pour t >= 0).
 // outT = paramètre t (optionnel).
 // outBary = barycentriques (u,v,w) optionnel, utile pour interpoler (normal, uv, etc.).
 bool RayTriangle(cpu_ray& ray, XMFLOAT3& a, XMFLOAT3& b, XMFLOAT3& c, XMFLOAT3& outHit, float* pOutT , XMFLOAT3* pOutBary, bool cullBackFace)
@@ -558,7 +558,7 @@ bool ObbObb(cpu_obb& a, cpu_obb& b)
 		b.center.z - a.center.z
 	};
 
-	// t exprimé dans la base de A
+	// t exprim?dans la base de A
 	float t[3] =
 	{
 		tW[0]*a.axis[0].x + tW[1]*a.axis[0].y + tW[2]*a.axis[0].z,
