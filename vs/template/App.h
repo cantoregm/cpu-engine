@@ -18,7 +18,10 @@ public:
 
 	void SpawnBalls();
 
-	void DrecreaseTimer();
+	void DrecreaseTimer(float dt);
+
+	bool Collision(cpu_entity* colider, cpu_entity* colided);
+	bool CollisionWithCircle(cpu_entity* colider);
 
 private:
 	inline static App* s_pApp = nullptr;
@@ -37,8 +40,8 @@ private:
 
 	//3D
 	float m_playerAngle = 0.f;
-	float m_playerSpeed = 0.5f;
-	float m_ballSpeed = 10.f;
+	float m_playerSpeed = 1.f;
+	float m_ballSpeed = 5.f;
 
 	cpu_entity* m_pPlayer;
 	cpu_entity* m_pbonus;
@@ -48,12 +51,21 @@ private:
 
 	std::list<cpu_entity*> m_balls;
 
+	std::unordered_map<cpu_particle_emitter*, float> m_particleEmitter;
+
+	//particle
+	cpu_particle_emitter* m_pEmitter;
+
 	//stats
 	int m_HP;
 	int m_score;
 	int m_scoreValue;
 	float m_basicBallSpawnCooldown = 2.f;
 	float m_ballSpawnCooldown = 0.f;
+
+	float m_basicTpCooldown = 10.f;
+	float m_tpCooldown = 0.f;
+	
 	
 	ui32 seed;
 	
