@@ -32,11 +32,13 @@ private:
 	cpu_mesh m_meshCircle1;
 	cpu_mesh m_meshCircle2;
 	cpu_mesh m_meshBall;
+	cpu_mesh m_meshShadow;
 
 	//Shader
 	cpu_material m_materialPlayer;
 	cpu_material m_materialCircle1;
 	cpu_material m_materialCircle2;
+
 
 	//3D
 	float m_playerAngle = 0.f;
@@ -44,21 +46,21 @@ private:
 	float m_ballSpeed = 5.f;
 
 	cpu_entity* m_pPlayer;
-	cpu_entity* m_pbonus;
-	cpu_entity* m_ppoint;
 	cpu_entity* m_pCircle1;
 	cpu_entity* m_pCircle2;
+	cpu_texture m_textureGaza;
 
-	std::list<cpu_entity*> m_balls;
 
-	std::unordered_map<cpu_particle_emitter*, float> m_particleEmitter;
+	std::unordered_map<cpu_entity*, cpu_entity*> m_balls;
+
+	std::unordered_map<cpu_particle_emitter*, float> m_particleEmitters;
 
 	//particle
 	cpu_particle_emitter* m_pEmitter;
 
 	//stats
-	int m_HP;
-	int m_score;
+	int m_HP = 3;
+	int m_score = 0;
 	int m_scoreValue;
 	float m_basicBallSpawnCooldown = 2.f;
 	float m_ballSpawnCooldown = 0.f;
@@ -68,7 +70,6 @@ private:
 	
 	
 	ui32 seed;
-	
 
 };
 

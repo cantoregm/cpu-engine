@@ -19,6 +19,8 @@ App::~App()
 
 void App::OnStart()
 {
+	m_font.Create(cpuDevice.GetHeight() <= 512 ? 14 : 28);
+
 	//seed 
 
 	seed = (ui32)timeGetTime();
@@ -47,12 +49,17 @@ void App::OnStart()
 	m_pCircle1->transform.pos.z = 30.f;
 
 	m_meshCircle2.CreateCircle(9.7f, 50.f);
-	m_materialCircle2.color = cpu::ToColor(42, 63, 53);
+	//m_materialCircle2.color = cpu::ToColor(42, 63, 53);
 	m_pCircle2 = cpuEngine.CreateEntity();
+	m_textureGaza.Load("gaza.png");
+	m_materialCircle2.pTexture = &m_textureGaza;
+
 	m_pCircle2->pMesh = &m_meshCircle2;
 	m_pCircle2->pMaterial = &m_materialCircle2;
 	m_pCircle2->transform.pos.z = 29.7f;
 	m_pCircle2->transform.pos.y = 0.1f;
+
+	
 
 	//particle
 	cpuEngine.GetParticleData()->Create(2000000);
@@ -65,7 +72,9 @@ void App::OnStart()
 	m_pEmitter->durationMax = 1.f;
 
 	//ball
+
 	m_meshBall.CreateSphere(0.5f);
+	m_meshShadow.CreateCircle(0.5f, 50.f, CPU_BLACK );
 }
 
 void App::OnUpdate()
@@ -73,18 +82,6 @@ void App::OnUpdate()
 	float dt = cpuTime.delta;
 
 	DrecreaseTimer(dt);
-
-	for (auto it : m_particleEmitter)
-	{
-		
-		if (it.second <= 0)
-		{
-			cpuEngine.Release(it.first);
-			continue;
-		}
-
-		it.second -= dt;
-	}
 
 
 	if (cpuInput.IsUp() && m_tpCooldown <= 0)
@@ -110,44 +107,64 @@ void App::OnUpdate()
 	}
 		
 
-	for (auto it : m_balls)
+	for (auto it = m_balls.begin(); it != m_balls.end(); )
 	{
-		cpu_entity* pBall = it;
+		std::pair<cpu_entity*, cpu_entity*> pBallAndShadow = *it;
+
+		cpu_entity* pBall = pBallAndShadow.first;
+		cpu_entity* pShadow = pBallAndShadow.second;
+
 		pBall->transform.pos.y -= (dt * m_ballSpeed);
 
 		if (Collision(pBall, m_pPlayer))
 		{
 			m_score++;
-			cpuEngine.Release(pBall);
-			continue;
+			if (m_score % 10 == 0)
+			{
+				m_HP++;
+				m_basicBallSpawnCooldown -= 0.2f;
+			}
+				
+			cpuEngine.Release(pBall);	
+			cpuEngine.Release(pShadow);
 		}
 
 		if (CollisionWithCircle(pBall))
 		{
 			m_HP--;
-			cpuEngine.Release(pBall);
 			cpu_particle_emitter* pParticleEmmitter = m_pEmitter;
 			
 			pParticleEmmitter->pos = pBall->transform.pos;
+			pParticleEmmitter->pos.y = pBall->transform.pos.y + pBall->pMesh->radius;
 
-			float timer = 1.f;
+			float timer = 0.5f;
 
-			m_particleEmitter.insert(std::pair<cpu_particle_emitter*, float>(pParticleEmmitter, timer));
+			m_particleEmitters.insert(std::pair<cpu_particle_emitter*, float>(pParticleEmmitter, timer));
+
+			cpuEngine.Release(pBall);
+			cpuEngine.Release(pShadow);
 			
 		}
+
+		if (pBall->dead)
+			it = m_balls.erase(it);
+
+		else
+			++it;
+			
 	}
 
 
-	for (auto it : m_balls)
-	{
-		if (it->dead)
-			m_balls.erase(std::find(m_balls.begin(), m_balls.end(), it));
-	}
 
-	for (auto it : m_particleEmitter)
+	for (auto it = m_particleEmitters.begin(); it != m_particleEmitters.end();)
 	{
-		if (it.first->dead)
-			m_particleEmitter.erase(std::find(m_balls.begin(), m_balls.end(), it));
+		std::pair<cpu_particle_emitter*, float> pParticleEmitter = *it;
+
+		if (pParticleEmitter.first->dead)
+			m_particleEmitters.erase(it);
+
+		else
+			++it;
 	}
 
 
@@ -163,7 +180,24 @@ void App::OnExit()
 
 void App::OnRender(int pass)
 {
-	// YOUR CODE HERE
+	switch (pass)
+	{
+
+	case CPU_PASS_UI_END:
+	{
+		
+		std::string life = CPU_STR(m_HP) + " HP ";
+		std::string score = "Score : " + CPU_STR(m_score);
+		std::string teleport = "TP cooldown : " + CPU_STR((int)m_tpCooldown+1);
+
+
+		XMFLOAT3 tint = { 1.0f, 1.0f, 0.8f };
+		cpuDevice.DrawText(&m_font, life.c_str(), (int)(0), 10, CPU_TEXT_LEFT, &tint);
+		cpuDevice.DrawText(&m_font, score.c_str(), (int)(cpuDevice.GetWidth())- 20, 10, CPU_TEXT_RIGHT, &tint);
+		cpuDevice.DrawText(&m_font, teleport.c_str(), (int)(cpuDevice.GetWidth())*0.5f, 10, CPU_TEXT_CENTER, &tint);
+		break;
+	}
+	}
 }
 
 void App::MyPixelShader(cpu_ps_io& io)
@@ -174,22 +208,38 @@ void App::MyPixelShader(cpu_ps_io& io)
 
 void App::SpawnBalls()
 {
-	cpu_entity* pBalls = cpuEngine.CreateEntity();
-	pBalls->pMesh = &m_meshBall;
-	m_balls.push_back(pBalls);
+	cpu_entity* pBall = cpuEngine.CreateEntity();
+	pBall->pMesh = &m_meshBall;
+
+	cpu_entity* pShadow = cpuEngine.CreateEntity();
+	pShadow->pMesh = &m_meshShadow;
+
+	m_balls.insert(std::pair<cpu_entity*, cpu_entity*> (pBall, pShadow));
 
 	float randomAngle = XM_2PI * cpu::Rand01(seed);
 
-	pBalls->transform.OrbitAroundAxis(m_pCircle1->transform.pos, CPU_VEC3_UP, 9.8f, randomAngle);
-	pBalls->transform.pos.y = 20.f;
+	pBall->transform.OrbitAroundAxis(m_pCircle1->transform.pos, CPU_VEC3_UP, 9.8f, randomAngle);
+	pBall->transform.pos.y = 20.f;
+
+	pShadow->transform.OrbitAroundAxis(m_pCircle1->transform.pos, CPU_VEC3_UP, 9.8f, randomAngle);
+	pShadow->transform.pos.y = 0.2f;
 	
 }
 
 void App::DrecreaseTimer(float dt)
 {
 
-	m_ballSpawnCooldown -= dt;
-	m_tpCooldown -= dt;
+	(m_ballSpawnCooldown > 0) ? m_ballSpawnCooldown -= dt : m_ballSpawnCooldown = -1;
+	(m_tpCooldown > 0) ? m_tpCooldown -= dt : m_tpCooldown = -1;
+
+	for (auto it : m_particleEmitters)
+	{
+		if (it.second <= 0)
+			cpuEngine.Release(it.first);
+
+		else
+			it.second -= dt;
+	}
 }
 
 bool App::Collision(cpu_entity* colider, cpu_entity* colided)
@@ -222,9 +272,14 @@ bool App::CollisionWithCircle(cpu_entity* colider)
 {
 	float y1 = colider->transform.pos.y;
 	float y2 = m_pCircle1->transform.pos.y;
+	float colRadius = colider->pMesh->radius;
 
-	if (y2 - y1 >= 0)
+
+	if (y2 - y1 >= 0+colRadius)
 		return true;
 
 	return false;
 }
+
+
+
